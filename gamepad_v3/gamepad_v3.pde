@@ -291,7 +291,7 @@ void draw(){
     text("leftX: " + leftX, 200, 15);
     text("leftY: " + leftY, 200, 35);
     text("rightX: " + rightX, 200, 55);
-    test("rightY: " + rightY, 200, 75);
+    text("rightY: " + rightY, 200, 75);
   }
   
 //-------------------- Single Joystick Mode ---------------------------------------
@@ -303,8 +303,8 @@ void draw(){
   {
 //-----------------Pan/Tilt Camera Right Stick functionality---------
     //map from -1 to +1 on joystick to 0 to 180 for Servo library calls
-    panOutput = map(rightX, -1,1,0,180); 
-    tiltOutput = map(rightY,-1,1,0,180);
+    panOutput = byte(map(rightX, -1,1,0,180)); 
+    tiltOutput = byte(map(rightY,-1,1,0,180));
 
 
     if(angle < 0 && angle > -PI/2) // Quadrant I 
