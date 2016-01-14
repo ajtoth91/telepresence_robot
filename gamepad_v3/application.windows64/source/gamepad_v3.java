@@ -1,3 +1,23 @@
+import processing.core.*; 
+import processing.data.*; 
+import processing.event.*; 
+import processing.opengl.*; 
+
+import processing.serial.*; 
+import procontroll.*; 
+import net.java.games.input.*; 
+
+import java.util.HashMap; 
+import java.util.ArrayList; 
+import java.io.File; 
+import java.io.BufferedReader; 
+import java.io.PrintWriter; 
+import java.io.InputStream; 
+import java.io.OutputStream; 
+import java.io.IOException; 
+
+public class gamepad_v3 extends PApplet {
+
 /* Gamepad
    In my experience ReadMe files tend to become lost after passing the code around a lot
    so I put everything here. Sorry if the amount of comments offends you.
@@ -83,9 +103,9 @@
    Updated upon by Andrew Toth
 
 */
-import processing.serial.*;
-import procontroll.*;
-import net.java.games.input.*;
+
+
+
 
 Serial myPort;
 PFont f, b;
@@ -125,7 +145,7 @@ float rPrevious;
 float angle;
 float magnitude;
 float output;
-float tolerance = 0.17;  // set tolerance value for joysticks
+float tolerance = 0.17f;  // set tolerance value for joysticks
 float maxSpeed = 127;
 
 int mode = 1; //single stick default
@@ -164,7 +184,7 @@ ControllButton Right;
 
 float coolie = 0;
 
-void setup(){
+public void setup(){
   size(400,400);
   f = loadFont("ArialMT-48.vlw");
   b = loadFont("Arial-BoldMT-48.vlw");
@@ -209,7 +229,7 @@ void setup(){
   Start = gamepad.getButton(8); //mode. 7 is Unknown
 }
 
-void draw(){
+public void draw(){
   background(255);
   
   // Start timing. Normally this would be an unsigned long, but
@@ -245,14 +265,14 @@ void draw(){
   }
   
   // Adjust the max and curve values using the DPad
-  curveValue += DPad.getX() * 0.05;
+  curveValue += DPad.getX() * 0.05f;
   
   if(curveValue > 10)
     curveValue = 10;
   else if(curveValue < -10)
     curveValue = -10;
     
-  maxSpeed += int(DPad.getY());
+  maxSpeed += PApplet.parseInt(DPad.getY());
   
   if(maxSpeed > 127)
     maxSpeed = 127;
@@ -280,8 +300,8 @@ void draw(){
   
   // joystick is not a perfect circle, therefore ignore anything
   // greater than 1.0 or less than zero
-  if(magnitude > 1.0)
-    magnitude = 1.0; 
+  if(magnitude > 1.0f)
+    magnitude = 1.0f; 
 
   if(magnitude < 0)
     magnitude = 0;
@@ -303,8 +323,8 @@ void draw(){
   {
 //-----------------Pan/Tilt Camera Right Stick functionality---------
     //map from -1 to +1 on joystick to 0 to 180 for Servo library calls
-    panOutput = byte(map(rightX, -1,1,0,180)); 
-    tiltOutput = byte(map(rightY,-1,1,0,180));
+    panOutput = PApplet.parseByte(map(rightX, -1,1,0,180)); 
+    tiltOutput = PApplet.parseByte(map(rightY,-1,1,0,180));
 
 
     if(angle < 0 && angle > -PI/2) // Quadrant I 
@@ -359,14 +379,14 @@ void draw(){
   // Mapping the output the way I had previously done it left a little 
   // flicker or shutter when switching between positive and negative values
   if(leftY < -tolerance) {
-    lOutput = byte(fscale(leftY, -tolerance, -1, 0, maxSpeed, curveValue));
+    lOutput = PApplet.parseByte(fscale(leftY, -tolerance, -1, 0, maxSpeed, curveValue));
     //leftY = byte(map(leftY, -1, -tolerance, 127, 0));
     leftY = lOutput;
     
   }  
   else if(leftY > tolerance) {
-    lOutput = byte(fscale(leftY, tolerance, 1, 129, 128+maxSpeed, curveValue));
-    leftY = byte(fscale(leftY, tolerance, 1, 0, -maxSpeed-1, curveValue));
+    lOutput = PApplet.parseByte(fscale(leftY, tolerance, 1, 129, 128+maxSpeed, curveValue));
+    leftY = PApplet.parseByte(fscale(leftY, tolerance, 1, 0, -maxSpeed-1, curveValue));
   }  
   else {
     lOutput = 0;
@@ -374,13 +394,13 @@ void draw(){
   }
   
   if(rightY < -tolerance) {
-    rOutput = byte(fscale(rightY, -tolerance, -1, 0, maxSpeed, curveValue));
+    rOutput = PApplet.parseByte(fscale(rightY, -tolerance, -1, 0, maxSpeed, curveValue));
     //rightY =  byte(fscale(rightY, -tolerance, -1, 0, 127, curveValue));
     rightY = rOutput;
   }  
   else if(rightY > tolerance) {
-    rOutput = byte(fscale(rightY, tolerance, 1, 129, 128+maxSpeed, curveValue));
-    rightY =  byte(fscale(rightY, tolerance, 1, 0, -maxSpeed-1, curveValue));
+    rOutput = PApplet.parseByte(fscale(rightY, tolerance, 1, 129, 128+maxSpeed, curveValue));
+    rightY =  PApplet.parseByte(fscale(rightY, tolerance, 1, 0, -maxSpeed-1, curveValue));
   }  
   else {
     rOutput = 0;  
@@ -452,9 +472,9 @@ void draw(){
   fill(0);
   
   textAlign(RIGHT, CENTER);
-  text(int(leftY), leftLine - 50, height/2);
+  text(PApplet.parseInt(leftY), leftLine - 50, height/2);
   textAlign(LEFT, CENTER);
-  text(int(rightY), rightLine + 50, height/2);
+  text(PApplet.parseInt(rightY), rightLine + 50, height/2);
   
   textAlign(CENTER, BASELINE);
   textFont(f,14);
@@ -497,7 +517,7 @@ void draw(){
 
 //-------------------- End Main ----------------------------------------------------
 
-void sendPackage(byte leftMotor, byte rightMotor, byte panMotor, byte tiltMotor) 
+public void sendPackage(byte leftMotor, byte rightMotor, byte panMotor, byte tiltMotor) 
 {
     myPort.write(HEADER);
     myPort.write(leftMotor);
@@ -525,7 +545,7 @@ void sendPackage(byte leftMotor, byte rightMotor, byte panMotor, byte tiltMotor)
  more weight to the numbers at the low end of the joystick. This will make the 
  joystick travel a longer distance for low speeds.
 */
-float fscale( float inputValue, float originalMin, float originalMax, float newBegin, float
+public float fscale( float inputValue, float originalMin, float originalMax, float newBegin, float
 newEnd, float curveValue){
 
   float OriginalRange = 0;
@@ -542,7 +562,7 @@ newEnd, float curveValue){
 
   // invert and scale - this seems more intuitive
   // postive numbers give more weight to high end on output
-  curveValue = (curveValue * -.1) ;  
+  curveValue = (curveValue * -.1f) ;  
   curveValue = pow(10, curveValue); // convert linear scale into lograthimic exponent for other pow function
 
   /*
@@ -597,4 +617,13 @@ newEnd, float curveValue){
   }
 
   return rangedValue;
+}
+  static public void main(String[] passedArgs) {
+    String[] appletArgs = new String[] { "gamepad_v3" };
+    if (passedArgs != null) {
+      PApplet.main(concat(appletArgs, passedArgs));
+    } else {
+      PApplet.main(appletArgs);
+    }
+  }
 }

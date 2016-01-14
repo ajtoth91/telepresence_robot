@@ -37,8 +37,12 @@
   since release 0017. Additional info on the Servo library can be found on the MegaServo library's
   page. **Depreciated MegaServo library in new release.
 */
-#include "Servo.h"
-
+#include <Servo.h>
+//pins 5,6,9,11 are PWM pins
+//Motor 1: A3,B4,p5.
+//Motor 2: A7, B8, p6
+//Motor 3: A2,B10, p9
+//Motor 4: A12, B13, p11 //none of these pins have been applied.
 const int lAnalogOutPin = 3;
 const int rAnalogOutPin = 11;
 const int lDirOutPin = 12;
@@ -55,7 +59,7 @@ byte rMotorDir = 0;
 byte panPos = 0;
 byte tiltPos= 0;
 
-int ledPin = 4;
+int ledPin = 13;
 int counter = 0;
 int timeout = 15; // about half a second
 int second = 0;
