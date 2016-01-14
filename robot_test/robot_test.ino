@@ -4,6 +4,11 @@
   move through their full range of motion.
 */
 #include <Servo.h>
+//pins 5,6,9,11 are PWM pins
+//Motor 1: A3,B4,p5.
+//Motor 2: A7, B8, p6
+//Motor 3: A2,B10, p9
+//Motor 4: A12, B13, p11 //none of these pins have been applied.
 
 const int lAnalogOutPin = 3;
 const int rAnalogOutPin = 11;
@@ -65,4 +70,36 @@ void loop()
     Serial.println("Servo has updated");
     delay(15);
   }
+  Serial.println("Moving Motor1");
+  int fwd = HIGH;
+  digitalWrite(3, fwd); //A
+  digitalWrite(4, !fwd);  //B
+  analogWrite(5, 255);
+  delay(500); //let it go for half a second.
+  analogWrite(5,0);
+  Serial.println("Stopped Motor1");
+
+  Serial.println("Moving Motor 2);
+  digitalWrite(7, fwd); //A
+  digitalWrite(8, !fwd);  //B
+  analogWrite(6, 255);
+  delay(500); //let it go for half a second.
+  analogWrite(6,0);
+  Serial.println("Stopped Motor2");
+
+  Serial.println("Moving Motor3");
+  digitalWrite(2, fwd); //A
+  digitalWrite(10, !fwd);  //B
+  analogWrite(9, 255);
+  delay(500); //let it go for half a second.
+  analogWrite(9,0);
+  Serial.println("Stopped Motor3");
+
+  Serial.println("Moving Motor4");
+  digitalWrite(12, fwd); //A
+  digitalWrite(13, !fwd);  //B
+  analogWrite(11, 255);
+  delay(500); //let it go for half a second.
+  analogWrite(11,0);
+  Serial.println("Stopped Motor4");
 }
