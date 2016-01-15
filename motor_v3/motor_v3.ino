@@ -39,14 +39,24 @@
 */
 #include <Servo.h>
 //pins 5,6,9,11 are PWM pins
-//Motor 1: A3,B4,p5.
-//Motor 2: A7, B8, p6
-//Motor 3: A2,B10, p9
-//Motor 4: A12, B13, p11 //none of these pins have been applied.
-const int lAnalogOutPin = 3;
-const int rAnalogOutPin = 11;
-const int lDirOutPin = 12;
-const int rDirOutPin = 13;
+//Right: A3,B4,p5.
+//Aft: A7, B8, p6
+//Left: A2,B10, p9
+//Front: A12, B13, p11 
+const int lAnalogOutPin = 9; //left
+const int rAnalogOutPin = 5; //right
+const int fAnalogOutPin = 11; //front
+const int aAnalogOutPin = 6; //aft
+
+const int lDirOutPinA = 2;
+const int lDirOutPinB = 10;
+const int rDirOutPinA = 3;
+const int rDirOutPinB = 4;
+const int fDirOutPinA = 12;
+const int fDirOutPinB = 13;
+const int aDirOutPinA = 7;
+const int aDirOutPinB = 8;
+
 const int panPin = 22; //top two pins on the right column
 const int tiltPin = 23;
 
@@ -100,8 +110,14 @@ void setup()
   // start serial port at 9600 bps:
   Serial.begin(9600);
   
-  pinMode(lDirOutPin, OUTPUT);
-  pinMode(rDirOutPin, OUTPUT);
+  pinMode(rDirOutPinA, OUTPUT);
+  pinMode(rDirOutPinB, OUTPUT);
+  pinMode(lDirOutPinA, OUTPUT);
+  pinMode(lDirOutPinB, OUTPUT);
+  pinMode(fDirOutPinA, OUTPUT);
+  pinMode(fDirOutPinB, OUTPUT);
+  pinMode(aDirOutPinA, OUTPUT);
+  pinMode(aDirOutPinB, OUTPUT);
   pinMode(ledPin, OUTPUT);
   
   panServo.attach(panPin);
@@ -115,6 +131,9 @@ void setup()
   
   analogWrite(lAnalogOutPin, 0);
   analogWrite(rAnalogOutPin, 0);
+  analogWrite(fAnalogOutPin, 0);
+  analogWrite(aAnalogOutPin, 0);
+  
   panServo.write(90); //neutral position
   tiltServo.write(90);
 }
@@ -204,8 +223,12 @@ void loop()
         Serial.println("R Motor Dir: Forwards"); 
       }
       */
-      digitalWrite(lDirOutPin, lMotorDir);
-      digitalWrite(rDirOutPin, rMotorDir);
+ 
+      digitalWrite(lDirOutPinA, lMotorDir);
+      digitalWrite(rDirOutPinA, rMotorDir);
+      digitalWrite(lDirOutPinB,!lMotorDir);
+      digitalWrite(rDirOutPinB,!rMotorDir);
+
       
       lMotorSpeed &= 127;
       rMotorSpeed &= 127;

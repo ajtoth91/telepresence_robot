@@ -109,6 +109,6 @@ delay(2000);
 
 /*FINDINGS
 Motor 1 is right side.
-2 is rear
-3 is left
-4 is front */
+Motor 2 is aft
+Motor 3 is left
+Motor 4 is front */
