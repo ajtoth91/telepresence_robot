@@ -64,29 +64,31 @@ void setup()
 
 void loop()
 {  
-  for (int i=0; i<180; i++){
+ while(Serial.available()<1){} //wait until Serial Console
+  /*for (int i=0; i<180; i++){
     panServo.write(i);
     tiltServo.write(i);
     Serial.println("Servo has updated");
     delay(15);
-  }
+  }*/
+  
   Serial.println("Moving Motor1");
-  int fwd = HIGH;
+  int fwd = LOW;
   digitalWrite(3, fwd); //A
   digitalWrite(4, !fwd);  //B
   analogWrite(5, 255);
   delay(500); //let it go for half a second.
   analogWrite(5,0);
   Serial.println("Stopped Motor1");
-
-  Serial.println("Moving Motor 2);
+delay(2000);
+  Serial.println("Moving Motor 2");
   digitalWrite(7, fwd); //A
   digitalWrite(8, !fwd);  //B
   analogWrite(6, 255);
   delay(500); //let it go for half a second.
   analogWrite(6,0);
   Serial.println("Stopped Motor2");
-
+delay(2000);
   Serial.println("Moving Motor3");
   digitalWrite(2, fwd); //A
   digitalWrite(10, !fwd);  //B
@@ -94,7 +96,7 @@ void loop()
   delay(500); //let it go for half a second.
   analogWrite(9,0);
   Serial.println("Stopped Motor3");
-
+delay(2000);
   Serial.println("Moving Motor4");
   digitalWrite(12, fwd); //A
   digitalWrite(13, !fwd);  //B
@@ -102,4 +104,11 @@ void loop()
   delay(500); //let it go for half a second.
   analogWrite(11,0);
   Serial.println("Stopped Motor4");
+delay(2000);
 }
+
+/*FINDINGS
+Motor 1 is right side.
+2 is rear
+3 is left
+4 is front */
