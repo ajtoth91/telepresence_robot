@@ -43,6 +43,9 @@
 //Aft: A7, B8, p6
 //Left: A2,B10, p9
 //Front: A12, B13, p11 
+
+const boolean DEBUG = false;
+
 const int lAnalogOutPin = 9; //left
 const int rAnalogOutPin = 5; //right
 const int fAnalogOutPin = 11; //front
@@ -69,7 +72,7 @@ byte rMotorDir = 0;
 byte panPos = 0;
 byte tiltPos= 0;
 
-int ledPin = 13;
+int ledPin = 24;
 int counter = 0;
 int timeout = 15; // about half a second
 int second = 0;
@@ -94,9 +97,11 @@ ISR(TIMER2_OVF_vect)
     analogWrite(rAnalogOutPin, 0);
     
     // for testing with the serial monitor
-    //second++;
-    //Serial.println(second);
-    
+    if (DEBUG) { 
+      second++;
+      Serial.println(second);
+    }
+
     // toggle LED pin
     digitalWrite(ledPin, digitalRead(ledPin) ^ 1);
     
@@ -175,54 +180,54 @@ void loop()
       // So for example to make a PWM with 50% duty cycle on both
       // motors type this: "#064064
       
-      /*
-      Serial.println("checkByte OK!");
-      
-      lMotorSpeed = (Serial.read()-'0')*100;
-      lMotorSpeed += (Serial.read()-'0')*10;
-      lMotorSpeed += (Serial.read()-'0');
-      
-      Serial.print("L Value Read: ");
-      Serial.println(lMotorSpeed, BIN);
-      
-      rMotorSpeed = (Serial.read()-'0')*100;
-      rMotorSpeed += (Serial.read()-'0')*10;
-      rMotorSpeed += (Serial.read()-'0');
-      
-      Serial.print("R Value Read: ");
-      Serial.println(rMotorSpeed, BIN);
+      if (DEBUG) {
+        Serial.println("checkByte OK!");
+        
+        lMotorSpeed = (Serial.read()-'0')*100;
+        lMotorSpeed += (Serial.read()-'0')*10;
+        lMotorSpeed += (Serial.read()-'0');
+        
+        Serial.print("L Value Read: ");
+        Serial.println(lMotorSpeed, BIN);
+        
+        rMotorSpeed = (Serial.read()-'0')*100;
+        rMotorSpeed += (Serial.read()-'0')*10;
+        rMotorSpeed += (Serial.read()-'0');
+        
+        Serial.print("R Value Read: ");
+        Serial.println(rMotorSpeed, BIN);
 
-      Serial.print("Pan Servo: ");
-      Serial.println(panPos);
+        Serial.print("Pan Servo: ");
+        Serial.println(panPos);
 
-      Serial.print("Tilt Servo: ");
-      Serial.println(tiltPos);
-      */
+        Serial.print("Tilt Servo: ");
+        Serial.println(tiltPos);
+      }
     
       lMotorDir = bitRead(lMotorSpeed, 7);
       rMotorDir = bitRead(rMotorSpeed, 7);
       
       //More debugging stuff
-      /*   
-      Serial.print("L Motor Dir: ");
-      Serial.println(lMotorDir, BIN);
-      Serial.print("R Motor Dir: ");
-      Serial.println(rMotorDir, BIN);
-    
-      if(lMotorDir) {
-        Serial.println("L Motor Dir: Backwards");
-      }  
-      else {
-        Serial.println("L Motor Dir: Forwards");
-      }
+      if (DEBUG){    
+        Serial.print("L Motor Dir: ");
+        Serial.println(lMotorDir, BIN);
+        Serial.print("R Motor Dir: ");
+        Serial.println(rMotorDir, BIN);
       
-      if(rMotorDir) {
-        Serial.println("R Motor Dir: Backwards");
-      }  
-      else {
-        Serial.println("R Motor Dir: Forwards"); 
+        if(lMotorDir) {
+          Serial.println("L Motor Dir: Backwards");
+        }  
+        else {
+          Serial.println("L Motor Dir: Forwards");
+        }
+        
+        if(rMotorDir) {
+          Serial.println("R Motor Dir: Backwards");
+        }  
+        else {
+          Serial.println("R Motor Dir: Forwards"); 
+        }
       }
-      */
  
       digitalWrite(lDirOutPinA, lMotorDir);
       digitalWrite(rDirOutPinA, rMotorDir);
@@ -234,12 +239,12 @@ void loop()
       rMotorSpeed &= 127;
       
       // Still more debugging stuff
-      /*   
-      Serial.print("L Motor Speed: ");
-      Serial.println(lMotorSpeed, BIN);
-      Serial.print("R Motor Speed: ");
-      Serial.println(rMotorSpeed, BIN);
-      */
+      if (DEBUG) {    
+        Serial.print("L Motor Speed: ");
+        Serial.println(lMotorSpeed, BIN);
+        Serial.print("R Motor Speed: ");
+        Serial.println(rMotorSpeed, BIN);
+      }
  
       // PWM on the Arduino wants an 8 bit value so 
       // we will remap it.     

@@ -163,6 +163,7 @@ ControllButton Left;
 ControllButton Right;
 
 float coolie = 0;
+static boolean ARDUINO = false;
 
 void setup(){
   size(400,400);
@@ -171,10 +172,13 @@ void setup(){
   
   // The microcontroller will connect on the first port listed
   // with a baud rate of 9600
-  // Don't forget to unccomment myPort once you're ready to start
+  // Don't forget to change the static boolean ARDUINO = TRUE once you're ready to start
   // using the microcontroller
   println(Serial.list());
-  myPort = new Serial(this, Serial.list()[0], 9600);
+  
+  if (ARDUINO){
+    myPort = new Serial(this, Serial.list()[0], 9600);
+  }
   
   controll = ControllIO.getInstance(this);
   controll.printDevices(); //debug
@@ -292,6 +296,10 @@ void draw(){
     text("leftY: " + leftY, 200, 35);
     text("rightX: " + rightX, 200, 55);
     text("rightY: " + rightY, 200, 75);
+    //include ternary because Processing uses signed Byte. 
+    //These calculations turn it into an int, so it displays correctly
+    text("panOutput: " + (panOutput < 0 ? panOutput+256 : panOutput), 200, 95);
+    text("tiltOutput: " + (tiltOutput < 0 ? tiltOutput+256 : tiltOutput), 200, 105);
   }
   
 //-------------------- Single Joystick Mode ---------------------------------------
@@ -301,11 +309,11 @@ void draw(){
   // mode 0 will be dependent on the y-axis of the joysticks only
   if(mode == 1) 
   {
-//-----------------Pan/Tilt Camera Right Stick functionality---------
+    //-----------------Pan/Tilt Camera Right Stick functionality---------
     //map from -1 to +1 on joystick to 0 to 180 for Servo library calls
     panOutput = byte(map(rightX, -1,1,0,180)); 
     tiltOutput = byte(map(rightY,-1,1,0,180));
-
+    //panOutput = byte(fscale(rightX,-1,1,0,180,curveValue));
 
     if(angle < 0 && angle > -PI/2) // Quadrant I 
     {
@@ -336,7 +344,7 @@ void draw(){
     }
 
     
-  }
+  }  //end mode 1
   
 //--------------------- Skid Steer Mode -------------------------------------------  
   
@@ -351,7 +359,7 @@ void draw(){
       
     if(R1.pressed())
       rightY = 0;
-  }
+  } //end mode 0
 
   // remap left and right Y axis
   // invert if negative so that the magnitude always goes from 0-127
@@ -399,8 +407,6 @@ void draw(){
     // reset timer
     previousMillis = currentMillis;
   
-    // Don't forget to umcomment this once you're ready to start using 
-    // the microcontroller!
     sendPackage(lOutput, rOutput, panOutput, tiltOutput);
     
     // Update new values
@@ -447,6 +453,13 @@ void draw(){
     fill(0);
     rect(rightLine, height/2 - rightY, 40, 20);
   }
+
+  //draw a dot for the right stick
+  line(width/2-20, height/2, width/2 +20, height/2);
+  arc(width/2, height/2, 40, 40, PI, -PI);
+  line(width/2, height/2-20, width/2, height/2+20);
+  ellipse(width/4 + (panOutput < 0 ? panOutput+256 : panOutput), height/4 + (tiltOutput < 0 ? tiltOutput+256 : tiltOutput),10,10); //Draw dot based on Servo Output
+  //ellipse(width/2, height/2, 40,40);
   
   textFont(f,16);               
   fill(0);
@@ -465,6 +478,11 @@ void draw(){
   textFont(f,18);
   text("L", leftLine, height/2 + 140);
   text("R", rightLine, height/2 + 140); 
+  
+  textAlign(CENTER, BASELINE);
+  textFont(f,14);
+  text("Pan: " + binary(panOutput,8),width/2, height/2 - 30);
+  text("Tilt: " + binary(tiltOutput,8),width/2, height/2 + 30);
   
   if(DEBUG == false)
   {
@@ -499,11 +517,17 @@ void draw(){
 
 void sendPackage(byte leftMotor, byte rightMotor, byte panMotor, byte tiltMotor) 
 {
-    myPort.write(HEADER);
-    myPort.write(leftMotor);
-    myPort.write(rightMotor);  
-    myPort.write(panMotor);
-    myPort.write(tiltMotor);
+    if (ARDUINO) {
+      myPort.write(HEADER);
+      myPort.write(leftMotor);
+      myPort.write(rightMotor);  
+      myPort.write(panMotor);
+      myPort.write(tiltMotor);
+    }
+    if (DEBUG) { //now we can debug package independently from attached Arduino
+      println("Package sent:\t" + HEADER + "\t"+leftMotor +"\t"+ rightMotor +"\t"+ int(panMotor) +"\t"+ int(tiltMotor));
+      println(hex(HEADER,2) + " " + hex(leftMotor,2) + " " + hex(rightMotor,2) + " " + hex(panMotor,2) + " " + hex(tiltMotor,2));
+   }
 }
 
 /* fscale
@@ -546,7 +570,7 @@ newEnd, float curveValue){
   curveValue = pow(10, curveValue); // convert linear scale into lograthimic exponent for other pow function
 
   /*
-   Serial.println(curve * 100, DEC);   // multply by 100 to preserve resolution  
+   Serial.println(curve * 100, DEC);   // multiply by 100 to preserve resolution  
    Serial.println(); 
    */
    
