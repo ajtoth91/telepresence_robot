@@ -63,6 +63,7 @@
    Add to the single-joystick mode: Not-so-single joystick. Left joystick uses a left/right
    motor pair. Right joystick is for two servos mounted in a pan/tilt configuration, for 
    a webcam. Defaults starting in single-joystick mode. Build with Processing 2.2.1
+  *Now requires a handshake with the Arduino. First, send a '@', wait until you receive '$'. Send a '&' as a response, then wait until a '%'. 
   
    Controls: 
    
@@ -213,6 +214,42 @@ void setup(){
   DPad.setMultiplier(-1);
   Select = gamepad.getButton(0);
   Start = gamepad.getButton(8); //mode. 7 is Unknown
+
+ //-------------------handshake with the Arduino, now that the controller is connected.
+//First, send a '@', wait until you receive '$'. Send a '&' as a response, then wait until a '%'. 
+ 
+ if (ARDUINO){
+   myPort.write('@');
+   if (DEBUG) { println("Sent '@' to Arduino. Waiting for response..."); }
+   //wait for response from the Arduino. Expect '$'
+   while (myPort.available() <=0) {} //just wait until we get a response
+   if (DEBUG) { println("Received response from Arduino. Let's check it out."); }
+   if (myPort.available() > 0) {
+     char response = char(myPort.read());
+     if ('$' == response) {
+        //we have the proper handshake, let's continue.
+        if (DEBUG) { println("We have properly received '$'. Now to send '&'"); }
+        myPort.write('&');
+        if (DEBUG) { println("Sent '&'. Awaiting response...");}
+          while (myPort.available() <= 0) {} //wait for another response
+          if (myPort.available() > 0) { //we got a response!
+            if (DEBUG) { println("Got our second response from the Arduino. Let's see what it is.");}
+            response = char(myPort.read());
+            if ('%' == response) {
+              if (DEBUG) { println("Handshake successful"); }
+            } else {
+              if (DEBUG) { println("Handshake failed. Expecting '%'. Received '" + response + "'");}
+              exit();
+            }               
+          }//end second response
+      } else { //our first response failed
+            if (DEBUG){ println("Handshake failed. Expecting '$'. Received '" + response + "'"); }
+            exit();
+      }  
+    } //end myport.available >0
+
+
+ }//end handshake (if ARDUINO) block
 }
 
 void draw(){

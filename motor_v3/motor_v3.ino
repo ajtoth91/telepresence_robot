@@ -145,7 +145,38 @@ void setup()
   
   panServo.write(90); //neutral position
   tiltServo.write(90);
-}
+
+//-------------Serial Handshake with Processing----------------
+//  stay here until Processing sketch asks if we're connected
+//  tell Processing we're connected
+//  wait until processing says "Good to have you"
+//  first wait for a @, then send a $, then receive a &. Send a % and begin.
+  while (!Serial.available()) {} //wait indefinitely until there's a message on the serial line
+  if (Serial.available() > 0) { //once something has appeared on the serial port
+    char response = Serial.read();
+    if ('@' == response) { 
+      Serial.print('$');  //if we receive a @ character, send a $.
+    } else { //We had an error receiving Processing's first @ character
+      Serial.println("Error receiving handshake from Processing. Expected '@'. Received ");
+      Serial.println(response);
+      Serial.println("FATAL ERROR");
+    }
+  }
+  delay(100); //wait 100ms for Processing to receive the handshake and send a response
+  while (!Serial.available()) {} //possibly wait longer if nothing has appeared on the serial port
+  if (Serial.available() > 0) {
+    char response = Serial.read();
+    if ('&' == response) {
+      Serial.print('%');
+    } else {
+      Serial.print("Error receiving handshake from Processing. Expected '%'. Recieved '");
+      Serial.print(response);
+      Serial.println("'");
+      Serial.println("FATAL ERROR");
+    }
+  }
+//------------------------------------------------------------------- 
+} //end setup()
 
 void loop()
 {  
