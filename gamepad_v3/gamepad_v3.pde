@@ -134,6 +134,7 @@ boolean startSet = false; // for reading the state of the start button
 boolean ySet = false;
 boolean xSet = false;
 boolean DEBUG = false;
+boolean LISTEN = false; //verbose listening to Arduino DEBUG
 
 // This is used for the fscale function to adjust the joystick feel and
 // give a more logarithmic response rather than a linear one. This should
@@ -163,7 +164,7 @@ ControllButton Left;
 ControllButton Right;
 
 float coolie = 0;
-static boolean ARDUINO = false;
+static boolean ARDUINO = true;
 
 void setup(){
   size(400,400);
@@ -174,8 +175,9 @@ void setup(){
   // with a baud rate of 9600
   // Don't forget to change the static boolean ARDUINO = TRUE once you're ready to start
   // using the microcontroller
+  println("Begin Serial list");
   println(Serial.list());
-  
+  println("end Serial list");
   if (ARDUINO){
     myPort = new Serial(this, Serial.list()[0], 9600);
   }
@@ -263,7 +265,8 @@ void draw(){
   else if(maxSpeed < 32)
     maxSpeed = 32;
 //-----------------------------------------------------------------------------
-  if (ARDUINO && DEBUG) {
+  if (ARDUINO && DEBUG && LISTEN) {
+    print("now the Arduino has a chance to speak");
     while (myPort.available() > 0){
       print(myPort.read());
     }

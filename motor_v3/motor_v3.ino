@@ -44,7 +44,8 @@
 //Left: A2,B10, p9
 //Front: A12, B13, p11 
 
-const boolean DEBUG = false;
+const boolean DEBUG = true;
+const boolean VERBOSE = false;
 
 const int lAnalogOutPin = 9; //left
 const int rAnalogOutPin = 5; //right
@@ -81,7 +82,7 @@ Servo panServo;
 Servo tiltServo;
 
 const byte messageLength = 4;
-byte message[messageLength];
+char message[messageLength];
 
 // In our experience, the motors accelerate much more
 // smoothly with lower frequencies.
@@ -100,7 +101,7 @@ ISR(TIMER2_OVF_vect)
     analogWrite(rAnalogOutPin, 0);
     
     // for testing with the serial monitor
-    if (DEBUG) { 
+    if (DEBUG && VERBOSE) { 
       second++;
       Serial.println(second);
     }
@@ -168,17 +169,6 @@ void loop()
       // This led will flash to indicate loss of signal
       // Otherwise it will stay high to indicate good signal
       digitalWrite(ledPin, HIGH);
-  
-      //checkByte OK! Read the message.
-      readBytes(message,messageLength);
-      if (DEBUG) { Serial.print("Received message: "); Serial.println(message); }
-
-    
-      lMotorSpeed = message[0];
-      rMotorSpeed = message[1];
-     
-      panPos = message[2];
-      tiltPos= message[3];
  
       // This section is for debugging purposes only
       // It allows you to enter bytes using the Serial Monitor
@@ -189,34 +179,60 @@ void loop()
       // motors type this: "#064064
       
       if (DEBUG) {
+        char dmsg[3*messageLength];
         Serial.println("checkByte OK!");
+        Serial.readBytes(dmsg,3*messageLength);
         
-        lMotorSpeed = (Serial.read()-'0')*100;
-        lMotorSpeed += (Serial.read()-'0')*10;
-        lMotorSpeed += (Serial.read()-'0');
+        lMotorSpeed = (dmsg[0]-'0')*100;
+        lMotorSpeed += (dmsg[1]-'0')*10;
+        lMotorSpeed += (dmsg[2]-'0');
         
         Serial.print("L Value Read: ");
+        Serial.print(lMotorSpeed);
+        Serial.print("\t");
         Serial.println(lMotorSpeed, BIN);
         
-        rMotorSpeed = (Serial.read()-'0')*100;
-        rMotorSpeed += (Serial.read()-'0')*10;
-        rMotorSpeed += (Serial.read()-'0');
+        rMotorSpeed = (dmsg[3]-'0')*100;
+        rMotorSpeed += (dmsg[4]-'0')*10;
+        rMotorSpeed += (dmsg[5]-'0');
         
         Serial.print("R Value Read: ");
+        Serial.print(rMotorSpeed);
+        Serial.print("\t");
         Serial.println(rMotorSpeed, BIN);
+
+        panPos = (dmsg[6]-'0')*100;
+        panPos += (dmsg[7]-'0')*10;
+        panPos += (dmsg[8]-'0');
 
         Serial.print("Pan Servo: ");
         Serial.println(panPos);
 
+        tiltPos = (dmsg[9]-'0')*100;
+        tiltPos += (dmsg[10]-'0')*10;
+        tiltPos += (dmsg[11]-'0');
+        
         Serial.print("Tilt Servo: ");
         Serial.println(tiltPos);
+      } else {    //no DEBUG  
+      
+        //checkByte OK! Read the message.
+        Serial.readBytes(message,messageLength);
+        
+        lMotorSpeed = message[0];
+        rMotorSpeed = message[1]; 
+        panPos = message[2];
+        tiltPos= message[3];
       }
+
+    
+     
     
       lMotorDir = bitRead(lMotorSpeed, 7);
       rMotorDir = bitRead(rMotorSpeed, 7);
       
       //More debugging stuff
-      if (DEBUG){ //WHOOPS. BROKE THIS STUFF WHEN I CHANGED TO READBYTES   
+      if (DEBUG){    
         Serial.print("L Motor Dir: ");
         Serial.println(lMotorDir, BIN);
         Serial.print("R Motor Dir: ");
