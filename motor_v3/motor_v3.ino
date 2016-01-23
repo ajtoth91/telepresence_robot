@@ -216,7 +216,7 @@ void loop()
       rMotorDir = bitRead(rMotorSpeed, 7);
       
       //More debugging stuff
-      if (DEBUG){    
+      if (DEBUG){ //WHOOPS. BROKE THIS STUFF WHEN I CHANGED TO READBYTES   
         Serial.print("L Motor Dir: ");
         Serial.println(lMotorDir, BIN);
         Serial.print("R Motor Dir: ");
