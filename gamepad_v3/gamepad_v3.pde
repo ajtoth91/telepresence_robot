@@ -262,7 +262,14 @@ void draw(){
     maxSpeed = 127;
   else if(maxSpeed < 32)
     maxSpeed = 32;
-  
+//-----------------------------------------------------------------------------
+  if (ARDUINO && DEBUG) {
+    while (myPort.available() > 0){
+      print(myPort.read());
+    }
+    println();
+  }
+ 
 //-------------------------------------------------------------------------------
 
 // begin computing and map values for joysticks
