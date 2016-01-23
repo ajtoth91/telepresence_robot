@@ -80,6 +80,9 @@ int second = 0;
 Servo panServo;
 Servo tiltServo;
 
+const byte messageLength = 4;
+byte message[messageLength];
+
 // In our experience, the motors accelerate much more
 // smoothly with lower frequencies.
 // Arduino runs at 16Mhz
@@ -148,11 +151,11 @@ void loop()
   
   if(Serial.available()) {
     
-  if (Serial.available() > 4) {
+  if (Serial.available() > messageLength) {
     
     // get incoming byte:
     checkByte = Serial.read();
-    
+   
     // the checkbyte is '#'
     if(checkByte == '#') 
     {
@@ -165,12 +168,17 @@ void loop()
       // This led will flash to indicate loss of signal
       // Otherwise it will stay high to indicate good signal
       digitalWrite(ledPin, HIGH);
-      
-      lMotorSpeed = Serial.read();
-      rMotorSpeed = Serial.read();
+  
+      //checkByte OK! Read the message.
+      readBytes(message,messageLength);
+      if (DEBUG) { Serial.print("Received message: "); Serial.println(message); }
+
+    
+      lMotorSpeed = message[0];
+      rMotorSpeed = message[1];
      
-      panPos = Serial.read();
-      tiltPos= Serial.read();
+      panPos = message[2];
+      tiltPos= message[3];
  
       // This section is for debugging purposes only
       // It allows you to enter bytes using the Serial Monitor
