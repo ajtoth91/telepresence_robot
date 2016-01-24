@@ -44,7 +44,7 @@
 //Left: A2,B10, p9
 //Front: A12, B13, p11 
 
-const boolean DEBUG = true;
+const boolean DEBUG = false;
 const boolean VERBOSE = false;
 
 const int lAnalogOutPin = 9; //left
@@ -169,7 +169,7 @@ void setup()
     if ('&' == response) {
       Serial.print('%');
     } else {
-      Serial.print("Error receiving handshake from Processing. Expected '%'. Recieved '");
+      Serial.print("Error receiving handshake from Processing. Expected '&'. Recieved '");
       Serial.print(response);
       Serial.println("'");
       Serial.println("FATAL ERROR");
@@ -312,6 +312,8 @@ void loop()
       //turn the servos to position
       panServo.write(panPos);
       tiltServo.write(tiltPos);
+      
+      Serial.print('!'); //received successfully
     }
   }
   }

@@ -134,7 +134,7 @@ boolean selectSet = false; // for reading the state of the select button
 boolean startSet = false; // for reading the state of the start button
 boolean ySet = false;
 boolean xSet = false;
-boolean DEBUG = false;
+boolean DEBUG = true;
 boolean LISTEN = false; //verbose listening to Arduino DEBUG
 
 // This is used for the fscale function to adjust the joystick feel and
@@ -219,13 +219,17 @@ void setup(){
 //First, send a '@', wait until you receive '$'. Send a '&' as a response, then wait until a '%'. 
  
  if (ARDUINO){
+   println("Writing '@' to Arduino.");
    myPort.write('@');
    if (DEBUG) { println("Sent '@' to Arduino. Waiting for response..."); }
    //wait for response from the Arduino. Expect '$'
-   while (myPort.available() <=0) {} //just wait until we get a response
+//   while (myPort.available() <=0) { print(". "); } //just wait until we get a response
+delay(500);
+   if (DEBUG) { println(myPort.available());}
    if (DEBUG) { println("Received response from Arduino. Let's check it out."); }
    if (myPort.available() > 0) {
      char response = char(myPort.read());
+     if (DEBUG) { println("Read from Arduino"); }
      if ('$' == response) {
         //we have the proper handshake, let's continue.
         if (DEBUG) { println("We have properly received '$'. Now to send '&'"); }
@@ -247,9 +251,7 @@ void setup(){
             exit();
       }  
     } //end myport.available >0
-
-
- }//end handshake (if ARDUINO) block
+  }//end handshake (if ARDUINO) block
 }
 
 void draw(){
@@ -358,7 +360,7 @@ void draw(){
   {
     //-----------------Pan/Tilt Camera Right Stick functionality---------
     //map from -1 to +1 on joystick to 0 to 180 for Servo library calls
-    panOutput = byte(map(rightX, -1,1,0,180)); 
+    panOutput = byte(map(rightX, -1,1,180,0)); 
     tiltOutput = byte(map(rightY,-1,1,0,180));
     //panOutput = byte(fscale(rightX,-1,1,0,180,curveValue));
 
