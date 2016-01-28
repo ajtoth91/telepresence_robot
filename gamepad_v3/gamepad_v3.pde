@@ -122,6 +122,8 @@ int interval = 300; // 300 milliseconds
 // just use the previous values.
 float lPrevious;
 float rPrevious;
+byte panOutput;
+byte tiltOutput;
 
 float angle;
 float magnitude;
@@ -395,6 +397,24 @@ void draw(){
     
   }  //end mode 1
   
+  if (DEBUG) {
+    if(Y.pressed()) {  println("Y pressed"); }
+    if(B.pressed()) {  println("B pressed"); }
+    if(A.pressed()) {  println("A pressed"); }
+    if(X.pressed()) {  println("X pressed"); }
+    if(R1.pressed()) { println("R1 pressed"); }
+    if(L1.pressed()) { println("L1 pressed"); }
+    if(R3.pressed()) { println("R3 pressed"); }
+    if(L3.pressed()) { println("L3 pressed"); }
+    if(Start.pressed()) { println("Start pressed"); }
+    if(Select.pressed()){ println("Select pressed"); }
+    if(DPad.pressed()){
+      println("DPad X: " + DPad.getX());
+      println("DPad Y: " + DPad.getY());
+    }
+  }
+
+
 //--------------------- Skid Steer Mode -------------------------------------------  
   
   // for mode 0 only! set to zero if x and y are below tolerances 
@@ -451,7 +471,7 @@ void draw(){
   // The arduino is configured to set the motor speeds to zero after about half a second if 
   // there is no serial input. This acts sort of like a watch dog timer, with Processing 
   // resetting the Arduino's timer before it can declare a loss of signal.  
-  if(lOutput != lPrevious || rOutput != rPrevious || currentMillis - previousMillis > interval)
+  if(lOutput != lPrevious || rOutput != rPrevious || currentMillis - previousMillis > interval || panOutput != panPrevious || tiltOutput != tiltPrevious)
   {
     // reset timer
     previousMillis = currentMillis;
@@ -461,6 +481,8 @@ void draw(){
     // Update new values
     lPrevious = lOutput;
     rPrevious = rOutput;
+    panPrevious = panOutput;
+    tiltPrevious = tiltOutput;
   }
   
 //-------------------- Draw Stuff Here --------------------------------------------

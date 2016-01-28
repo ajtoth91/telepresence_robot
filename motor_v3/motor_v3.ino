@@ -99,6 +99,8 @@ ISR(TIMER2_OVF_vect)
     // If we don't recive any data after a few seconds set outputs to zero
     analogWrite(lAnalogOutPin, 0);
     analogWrite(rAnalogOutPin, 0);
+    panServo.write(90);
+    tiltServo.write(90);
     
     // for testing with the serial monitor
     if (DEBUG && VERBOSE) { 
