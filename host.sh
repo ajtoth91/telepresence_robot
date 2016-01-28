@@ -7,7 +7,7 @@ fi
 
 echo 'Step 1 of 5'
 echo '  Starting inadyn to connect to the domain name'
-inadyn -u imgod22222@aim.com -p zombone -a imgod2222.mooo.com,VGo4YmJVRXhKT29BQUw1QnRGMDozNTU2OTk3 &
+inadyn -u imgod22222@aim.com -a imgod2222.mooo.com,VGo4YmJVRXhKT29BQUw1QnRGMDozNTU2OTk3 &
 
 echo 'Step 2 of 5'
 echo '  Starting up the usbip daemon'
